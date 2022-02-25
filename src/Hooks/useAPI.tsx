@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {delay} from "../utils/utils";
 
 type NamesSummary = { names: string[], errors: string[] };
@@ -11,13 +11,13 @@ export type UseAPI = {
 
 export const useAPI = (): UseAPI => {
     const url = `https://api.coinpaprika.com/v1/`;
-    const [currencies, setCurrencies] = useState<any[] | null>(null);
-    const [knownNames, setKnownNames] = useState<Map<string, string>>(new Map());
-    const [knownIds, setKnownIds] = useState<Map<string, string>>(new Map());
+    let currencies: any[] = [];
+    const knownNames: Map<string, string> = new Map();
+    const knownIds: Map<string, string> = new Map();
     useEffect(() => {
         fetch(`${url}coins`)
             .then(response => response.json())
-            .then(d => setCurrencies(d))
+            .then(d => {currencies=d})
             .catch(er => console.error(er));
     }, [url]);
 
@@ -31,9 +31,7 @@ export const useAPI = (): UseAPI => {
             const foundCurrency = currencies?.find(curr => curr.symbol === symbol);
             if (foundCurrency) {
                 const name = foundCurrency.name;
-                const newKnownNames = new Map(knownNames);
-                newKnownNames.set(symbol, name);
-                setKnownNames(newKnownNames);
+                knownNames.set(symbol, name);
                 return {...summary, names: [...summary.names, name]};
             } else {
                 return {names: [...summary.names, `{{ Name/${symbol} }}`], errors: [...summary.errors, symbol]};
@@ -50,9 +48,7 @@ export const useAPI = (): UseAPI => {
         const foundCurrency = currencies?.find(curr => curr.symbol === symbol);
         if (foundCurrency) {
             const id = foundCurrency.id;
-            const newKnownIds = new Map(knownIds);
-            newKnownIds.set(symbol, id);
-            setKnownIds(newKnownIds)
+            knownIds.set(symbol, id);
             return id;
         }
         return null;

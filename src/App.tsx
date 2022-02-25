@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import './styles/app.css';
 import {Editor} from "./Components/Editor";
 
 function App() {
